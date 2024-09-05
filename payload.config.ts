@@ -1,6 +1,8 @@
 import path from 'path'
 // import { postgresAdapter } from '@payloadcms/db-postgres'
 import { en } from 'payload/i18n/en'
+import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
+import { s3Adapter } from '@payloadcms/plugin-cloud-storage/s3'
 import {
   AlignFeature,
   BlockquoteFeature,
@@ -128,6 +130,26 @@ export default buildConfig({
     defaultLocale: 'en',
     fallback: true,
   },
+
+  plugins: [
+    cloudStoragePlugin({
+      collections: {
+        media: {
+          adapter: s3Adapter({
+            config: {
+              credentials: {
+                accessKeyId: process.env.S3_ACCESS_KEY!,
+                secretAccessKey: process.env.S3_SECRET_KEY!,
+              },
+              region: process.env.S3_REGION!,
+              // ... Other S3 configuration
+            },
+            bucket: process.env.S3_BUCKET!,
+          }), // see docs for the adapter you want to use
+        },
+      },
+    }),
+  ],
 
   admin: {
     autoLogin: {
